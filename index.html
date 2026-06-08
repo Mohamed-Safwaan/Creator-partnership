@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f0e8;
+    --accent: #c8a96e;
+    --accent-light: #eedfc0;
+    --muted: #6b6860;
+    --rule: #d4cec4;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #e8e3d8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 32px 16px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .page {
+    background: var(--paper);
+    width: 100%;
+    max-width: 680px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 10;
+  }
+  .top-bar { height: 5px; background: linear-gradient(90deg, var(--accent) 0%, #e8c882 50%, var(--accent) 100%); }
+  .header { padding: 40px 48px 32px; border-bottom: 1px solid var(--rule); position: relative; }
+  .header-eyebrow { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 400; color: var(--ink); line-height: 1.2; margin-bottom: 6px; }
+  .header-title em { font-style: italic; color: var(--accent); }
+  .header-subtitle { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 420px; margin-top: 10px; }
+  .header-name { position: absolute; top: 40px; right: 48px; text-align: right; }
+  .header-name .name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .header-name .role { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 0.05em; }
+  .body { padding: 0 48px 40px; }
+  .section { padding: 28px 0; border-bottom: 1px solid var(--rule); }
+  .section:last-child { border-bottom: none; }
+  .section-label { font-size: 9.5px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--accent-light); }
+  .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .what-item { background: var(--white); border: 1px solid var(--rule); padding: 13px 15px; position: relative; }
+  .what-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); }
+  .what-item-title { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+  .what-item-body { font-size: 11.5px; color: var(--muted); line-height: 1.55; }
+  .split-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+  .split-box { padding: 16px; border: 1px solid var(--rule); }
+  .split-box.yours { background: var(--white); }
+  .split-box.mine { background: #1a1a18; }
+  .split-label { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px; color: var(--accent); }
+  .split-list { list-style: none; }
+  .split-list li { font-size: 12px; line-height: 1.5; padding: 4px 0; border-bottom: 1px solid; display: flex; align-items: flex-start; gap: 7px; }
+  .split-box.yours .split-list li { color: var(--ink); border-color: var(--rule); }
+  .split-box.mine .split-list li { color: #e8e3d8; border-color: #333330; }
+  .split-list li:last-child { border-bottom: none; }
+  .split-list li::before { content: '—'; font-size: 10px; flex-shrink: 0; margin-top: 1px; color: var(--accent); }
+  .rights-block { background: #1a1a18; padding: 22px 24px; position: relative; overflow: hidden; }
+  .rights-block::after { content: '§'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-family: 'Playfair Display', serif; font-size: 80px; color: rgba(200,169,110,0.12); line-height: 1; }
+  .rights-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 400; color: var(--accent-light); margin-bottom: 14px; font-style: italic; }
+  .rights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; z-index: 1; }
+  .right-item { display: flex; gap: 8px; align-items: flex-start; }
+  .right-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
+  .right-text { font-size: 11.5px; color: #d4cec4; line-height: 1.5; }
+  .right-text strong { color: var(--accent-light); font-weight: 500; display: block; font-size: 12px; }
+  .legal-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--rule); }
+  .legal-row:last-child { border: none; }
+  .legal-tag { font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border: 1px solid var(--accent); color: var(--accent); white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .legal-text { font-size: 12px; color: var(--muted); line-height: 1.55; }
+  .legal-text strong { color: var(--ink); font-weight: 500; }
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 16px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .step:last-child { border: none; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; color: var(--accent-light); line-height: 1; flex-shrink: 0; width: 28px; text-align: right; }
+  .step-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .step-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .promise { background: var(--accent-light); border: 1px solid var(--accent); padding: 18px 22px; margin-top: 4px; }
+  .promise-quote { font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; color: var(--ink); line-height: 1.65; }
+  .promise-attribution { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: right; letter-spacing: 0.05em; }
+  .footer { background: #1a1a18; padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .footer-left { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--accent-light); font-style: italic; }
+  .footer-contacts { display: flex; gap: 20px; }
+  .footer-contact { text-align: right; }
+  .fc-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+  .fc-value { font-size: 12px; color: #d4cec4; }
+  .bottom-bar { height: 3px; background: linear-gradient(90deg, var(--accent) 0%, #e8c882 50%, var(--accent) 100%); }
+  @media (max-width: 560px) {
+    .header { padding: 28px 24px 24px; }
+    .header-name { position: static; text-align: left; margin-top: 16px; }
+    .body { padding: 0 24px 32px; }
+    .what-grid, .split-row, .rights-grid { grid-template-columns: 1fr; }
+    .footer { padding: 20px 24px; flex-direction: column; align-items: flex-start; }
+    .footer-contacts { flex-direction: column; gap: 10px; }
+    .footer-contact { text-align: left; }
+    .header-title { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top-bar"></div>
+  <div class="header">
+    <p class="header-eyebrow">Creator Partnership Document</p>
+    <h1 class="header-title">How we work<br><em>together.</em></h1>
+    <p class="header-subtitle">Everything you need to know about working with me — before you say yes to anything.</p>
+    <div class="header-name">
+      <p class="name">Mohamed Safwaan</p>
+      <p class="role">UGC & Creator Relations</p>
+      <p class="role" style="margin-top:2px; color: #c8a96e;">+91 7012588979</p>
+    </div>
+  </div>
+  <div class="body">
+    <div class="section">
+      <p class="section-label">What I do for you</p>
+      <div class="what-grid">
+        <div class="what-item">
+          <p class="what-item-title">Find the right brands</p>
+          <p class="what-item-body">I approach and vet brands that genuinely match your content — no random irrelevant pitches.</p>
+        </div>
+        <div class="what-item">
+          <p class="what-item-title">Negotiate your rates</p>
+          <p class="what-item-body">I know market rates. I negotiate from your floor upward and share the brand's budget before you agree.</p>
+        </div>
+        <div class="what-item">
+          <p class="what-item-title">Handle all paperwork</p>
+          <p class="what-item-body">Agreements, usage rights, model releases — signed and documented every time, protecting you fully.</p>
+        </div>
+        <div class="what-item">
+          <p class="what-item-title">Manage deliveries & payments</p>
+          <p class="what-item-body">I collect 50% advance before you start. You never chase a payment — I do that for you.</p>
+        </div>
+        <div class="what-item">
+          <p class="what-item-title">Clear, complete briefs</p>
+          <p class="what-item-body">You receive a structured brief with format, messaging, deadlines, and dos & don'ts before a single frame is shot.</p>
+        </div>
+        <div class="what-item">
+          <p class="what-item-title">Handle revisions & approvals</p>
+          <p class="what-item-body">All feedback goes through me. You get consolidated, clear direction — not a WhatsApp flood from the brand.</p>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <p class="section-label">The division of work</p>
+      <div class="split-row">
+        <div class="split-box yours">
+          <p class="split-label">You focus on</p>
+          <ul class="split-list">
+            <li>Creating great content</li>
+            <li>Your creative voice & style</li>
+            <li>Meeting the brief deadline</li>
+            <li>Disclosure labels on posts</li>
+            <li>Growing your audience</li>
+          </ul>
+        </div>
+        <div class="split-box mine">
+          <p class="split-label">I handle everything else</p>
+          <ul class="split-list">
+            <li>Finding & pitching brands</li>
+            <li>Rates, contracts, agreements</li>
+            <li>Revision management</li>
+            <li>Payment collection & follow-up</li>
+            <li>Usage rights documentation</li>
+            <li>ASCI compliance oversight</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <p class="section-label">You are my client too</p>
+      <div class="rights-block">
+        <p class="rights-title">Your rights as a creator I represent</p>
+        <div class="rights-grid">
+          <div class="right-item">
+            <div class="right-dot"></div>
+            <div class="right-text"><strong>Right to say no</strong>I never commit you to a deal without your explicit approval. Every brief is a choice, not a mandate.</div>
+          </div>
+          <div class="right-item">
+            <div class="right-dot"></div>
+            <div class="right-text"><strong>Right to your own deals</strong>Brands that contact you directly — with no involvement from me — are fully yours. My commission applies only to deals I initiate.</div>
+          </div>
+          <div class="right-item">
+            <div class="right-dot"></div>
+            <div class="right-text"><strong>Right to full transparency</strong>You will always know the brand's budget, my commission, and every clause in the agreement before signing anything.</div>
+          </div>
+          <div class="right-item">
+            <div class="right-dot"></div>
+            <div class="right-text"><strong>Right to exit</strong>Our agreement runs on a 6–12 month term with 30 days written notice to exit. No lock-ins, no penalties.</div>
+          </div>
+          <div class="right-item">
+            <div class="right-dot"></div>
+            <div class="right-text"><strong>Copyright stays with you</strong>You retain ownership of everything you create. Brands receive a licence — never full ownership — unless specifically agreed and fairly compensated.</div>
+          </div>
+          <div class="right-item">
+            <div class="right-dot"></div>
+            <div class="right-text"><strong>Right to creative integrity</strong>I will only bring brands that fit your niche and values. I will never ask you to endorse something that conflicts with your audience's trust.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <p class="section-label">Legal framework — how I protect you</p>
+      <div class="legal-row">
+        <span class="legal-tag">Copyright Act 1957</span>
+        <p class="legal-text"><strong>Your content is your IP.</strong> Every agreement clearly defines what the brand can use, on which platforms, for how long, and in which territories. Brands using your content in paid ads need explicit ad-usage rights — we charge a premium for that.</p>
+      </div>
+      <div class="legal-row">
+        <span class="legal-tag">ASCI Guidelines</span>
+        <p class="legal-text"><strong>Every campaign includes a disclosure brief.</strong> I ensure all content meets the mandatory #Ad, #Sponsored, or #PaidPartnership requirements so you are never exposed to a non-compliance notice. I share the official ASCI guidelines document with you when you join.</p>
+      </div>
+      <div class="legal-row">
+        <span class="legal-tag">Model Release</span>
+        <p class="legal-text"><strong>Your face and voice are yours.</strong> Model release clauses in every contract define exactly where your likeness can be used — and for how long. No brand can use your image beyond what is signed.</p>
+      </div>
+      <div class="legal-row">
+        <span class="legal-tag">Payment Terms</span>
+        <p class="legal-text"><strong>50% advance before creation begins.</strong> Remaining 50% within 7 days of brand approval. I chase late payments on your behalf. All transactions documented by invoice.</p>
+      </div>
+      <div class="legal-row">
+        <span class="legal-tag">Non-Circumvention</span>
+        <p class="legal-text"><strong>Protects both of us.</strong> Brands I introduce cannot bypass me to deal with you directly for 12 months. This is standard agency practice and keeps the relationship honest on all sides.</p>
+      </div>
+    </div>
+    <div class="section">
+      <p class="section-label">How a typical deal works</p>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <p class="step-title">Brand brief received</p>
+            <p class="step-desc">I receive a campaign brief from the brand and assess whether it fits your niche, values, and schedule.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <p class="step-title">Your approval first</p>
+            <p class="step-desc">I share the brief and brand with you. You review and decide — yes, no, or negotiate. Nothing proceeds without your green light.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <p class="step-title">Agreement signed & advance collected</p>
+            <p class="step-desc">I finalise the contract, clarify usage rights, and collect 50% advance from the brand before you start.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">04</span>
+          <div class="step-content">
+            <p class="step-title">You create, I manage the process</p>
+            <p class="step-desc">You shoot and deliver the content to me. I handle brand communication, revision feedback, and approval — keeping it clean and stress-free for you.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">05</span>
+          <div class="step-content">
+            <p class="step-title">Brand approves, you get paid</p>
+            <p class="step-desc">Final payment collected and transferred to you within specified days of approval. Every deal closed with a proper invoice trail.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section" style="border-bottom:none; padding-bottom: 0;">
+      <p class="section-label">My commitment to you</p>
+      <div class="promise">
+        <p class="promise-quote">"Brands are my clients. But so are you. That's why I will never put a brand's convenience ahead of your rights, your creative voice, or your financial security. Every agreement I place before you will be one I can explain honestly, defend confidently, and stand behind completely."</p>
+        <p class="promise-attribution">— Mohamed Safwaan, Creator Relations</p>
+      </div>
+    </div>
+
+<div style="text-align:center; padding:18px 0 8px;">
+  <a href="creator-partnership.pdf"
+     download
+     style="
+       display:inline-block;
+       padding:8px 14px;
+       border:1px solid #c8a96e;
+       color:#1a1a18;
+       text-decoration:none;
+       font-size:11px;
+       letter-spacing:0.08em;
+       text-transform:uppercase;
+       border-radius:3px;
+       background:transparent;">
+     Save PDF Copy
+  </a>
+</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">Ready to work<br>together?</div>
+<div class="footer-left" style="display:flex;align-items:center;justify-content:center;">
+  <a href="https://wa.me/917012588979"
+     target="_blank"
+     style="
+       display:inline-block;
+       padding:8px 14px;
+       background:#c8a96e;
+       color:#1a1a18;
+       text-decoration:none;
+       font-size:11px;
+       font-weight:500;
+       letter-spacing:0.08em;
+       text-transform:uppercase;
+       border-radius:3px;">
+     Chat on WhatsApp
+  </a>
+</div>
+    <div class="footer-contacts">
+      <div class="footer-contact">
+        <p class="fc-label">WhatsApp</p>
+        <p class="fc-value">+91 7012588979</p>
+      </div>
+      <div class="footer-contact">
+        <p class="fc-label">Email</p>
+        <p class="fc-value">
+  <a href="mailto:safwaanworks@gmail.com"
+     style="color:#d4cec4; text-decoration:none;">
+     safwaanworks@gmail.com
+  </a>
+</p>
+      </div>
+      <div class="footer-contact">
+        <p class="fc-label">Instagram</p>
+        <p class="fc-value">
+  <a href="https://instagram.com/safwaan.mo"
+     target="_blank"
+     style="color:#d4cec4; text-decoration:none;">
+     @safwaan.mo
+  </a>
+</p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar"></div>
+</div>
+</body>
+</html>
+
